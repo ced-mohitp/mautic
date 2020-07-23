@@ -10,6 +10,7 @@
 namespace Mautic\CoreBundle\Helper;
 
 use Mautic\CoreBundle\Model\AbstractCommonModel;
+use Mautic\LeadBundle\Entity\Lead; //added by mwb 
 
 class DataExporterHelper
 {
@@ -46,6 +47,19 @@ class DataExporterHelper
                 $row = array_map(function ($itemEncode) {
                     return html_entity_decode($itemEncode, ENT_QUOTES);
                 }, $resultsCallback($item));
+
+                //added by mwb
+                $isLeadInstance = ($item instanceof Lead ) ;
+                if($isLeadInstance){
+                    $itemTags = array();  
+                    if (count($item->getTags()) > 0) {
+                        foreach ($item->getTags() as $tag) {
+                            $itemTags[] = $tag->getTag();
+                        }
+                    }
+                    $row['tags'] = implode(',', $itemTags);
+                }
+                //added by mwb
 
                 $toExport[] = $this->secureAgainstCsvInjection($row);
             }

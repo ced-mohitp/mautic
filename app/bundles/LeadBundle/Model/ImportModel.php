@@ -387,7 +387,7 @@ class ImportModel extends FormModel
                 try {
                     $entityModel = $import->getObject() === 'company' ? $this->companyModel : $this->leadModel;
 
-                    $merged = $entityModel->import(
+                    /*$merged = $entityModel->import(
                         $import->getMatchedFields(),
                         $data,
                         $import->getDefault('owner'),
@@ -396,7 +396,40 @@ class ImportModel extends FormModel
                         true,
                         $eventLog,
                         $import->getId()
-                    );
+                    );*/ //commented by mwb 
+
+                    //added by mwb
+                    $addTags = false ;
+                    if(in_array('tags', $headers)){
+                        if(isset($data['tags']) && $data['tags'] != ""){
+                            $addTags = true ;
+                        }
+                    }
+                    if($addTags){
+                        $merged = $entityModel->import(
+                            $import->getMatchedFields(),
+                            $data,
+                            $import->getDefault('owner'),
+                            $import->getDefault('list'),
+                            $data['tags'],
+                            true,
+                            $eventLog,
+                            $import->getId()
+                        );
+
+                    }else{
+                        $merged = $entityModel->import(
+                            $import->getMatchedFields(),
+                            $data,
+                            $import->getDefault('owner'),
+                            $import->getDefault('list'),
+                            $import->getDefault('tags'),
+                            true,
+                            $eventLog,
+                            $import->getId()
+                        );
+                    }
+                    //added by mwb
 
                     if ($merged) {
                         $this->logDebug('Entity on line '.$lineNumber.' has been updated', $import);
